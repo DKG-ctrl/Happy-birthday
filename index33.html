@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #000;
+            transition: background-color 0.2s ease-out;
+        }
+
+        /* --- PHASE 1: TIA LỬA --- */
+        #phase-intro {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100; background: #000;
+        }
+        
+        .start-hint {
+            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+            color: #888; font-size: 0.9rem; letter-spacing: 1px;
+            animation: fadeInOut 2s infinite; cursor: pointer; z-index: 101;
+        }
+
+        .magic-spark {
+            position: absolute;
+            bottom: 0; left: 50%; 
+            width: 12px; height: 12px;
+            background: radial-gradient(circle, #fff 20%, #ffd700 50%, #ff4500 100%);
+            border-radius: 50%;
+            display: none; 
+            z-index: 102;
+            animation: spark-flicker 0.1s infinite alternate; 
+        }
+
+        @keyframes spark-flicker {
+            0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 10px 2px #ff4500; opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.2); box-shadow: 0 0 20px 5px #ff6b35; opacity: 0.9; }
+            100% { transform: translateX(-50%) scale(0.9); box-shadow: 0 0 8px 1px #ff4500; opacity: 1; }
+        }
+
+        .magic-spark::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, 0);
+            width: 4px; height: 80px; background: linear-gradient(to bottom, rgba(255, 69, 0, 0.8), transparent);
+            filter: blur(2px); z-index: -1;
+        }
+
+        /* --- PHASE 2: HỘP QUÀ (ĐÃ CHỈNH NHỎ & LINK GITHUB RAW) --- */
+        #phase-box {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; justify-content: center; align-items: center;
+            background: #ffe6e6; z-index: 90;
+        }
+        .gift-wrapper {
+            position: relative; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center;
+            transition: transform 0.3s;
+        }
+        .gift-wrapper:hover { transform: scale(1.05); } 
+        
+        /* Ảnh Hộp Quà 3D Microsoft Fluent */
+        .gift-image {
+            width: 120px; /* Đã chỉnh nhỏ lại (cũ là 180px) */
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+            /* Animation: Lắc lư nhẹ nhàng (Gentle) */
+            animation: gentle-shake 3s ease-in-out infinite;
+        }
+
+        .click-hint-text {
+            color: #d6336c; margin-top: 20px; font-family: 'Pacifico'; font-size: 1.5rem;
+            opacity: 0; animation: slideUpFade 1s 0.5s forwards;
+        }
+
+        /* --- PHASE 3: THIỆP & TIM BAY --- */
+        #phase-celebration {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; justify-content: center; align-items: center;
+            background: linear-gradient(to right, #ff9a9e, #fecfef, #feada6); 
+            z-index: 80; opacity: 0; transition: opacity 1s;
+        }
+        #heart-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 85; }
+
+        .card-container {
+            background-color: #fff0f5; width: 400px; padding: 40px; border-radius: 20px;
+            text-align: center; box-shadow: 0 20px 50px rgba(255, 154, 158, 0.3);
+            transform: scale(0.8); transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative; z-index: 90;
+        }
+        .card-container.active { transform: scale(1); }
+
+        /* Bánh kem phẳng */
+        .cake-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 10px auto; }
+        .cake-bottom { position: absolute; bottom: 0; left: 10px; width: 80px; height: 30px; background: #ffc2d1; border-radius: 2px; }
+        .cake-bottom::before { content: ''; position: absolute; top: -10px; left: -5px; width: 90px; height: 10px; background: #fff; border-radius: 5px; z-index: 2; }
+        .cake-top { position: absolute; bottom: 40px; left: 20px; width: 60px; height: 30px; background: #ffc2d1; border-radius: 2px; }
+        .cake-top::before { content: ''; position: absolute; top: -10px; left: -5px; width: 70px; height: 10px; background: #fff; border-radius: 5px; z-index: 2; }
+        .candle { position: absolute; bottom: 80px; left: 48px; width: 4px; height: 20px; background: #fca311; }
+        .flame { position: absolute; bottom: 102px; left: 45px; width: 10px; height: 12px; background: #fb5607; border-radius: 50% 50% 20% 20%; animation: flicker 0.5s infinite alternate; }
+
+        h1 { font-family: 'Pacifico', cursive; color: #d6336c; font-size: 2.2rem; margin-bottom: 20px; font-weight: 400; }
+        .message { font-size: 0.95rem; color: #555; line-height: 1.6; margin-bottom: 25px; }
+        .footer { font-size: 0.8rem; color: #888; font-style: italic; opacity: 0; transition: opacity 2s; }
+        .footer.show { opacity: 1; }
+
+        /* Animations */
+        @keyframes fadeInOut { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+        
+        /* Hiệu ứng lắc lư NHẸ NHÀNG */
+        @keyframes gentle-shake {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(2deg); }
+            75% { transform: translateY(-5px) rotate(-2deg); }
+        }
+        
+        @keyframes flicker { from { transform: scale(1); opacity: 1; } to { transform: scale(1.1); opacity: 0.8; } }
+        @keyframes slideUpFade { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="phase-intro">
+        <div class="start-hint" onclick="startSequence()">Click để thắp nến... ✨</div>
+        <div class="magic-spark" id="spark"></div>
+    </div>
+
+    <div id="phase-box">
+        <div class="gift-wrapper" onclick="openGift()">
+            <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Wrapped%20gift/3D/wrapped_gift_3d.png" alt="Gift Box" class="gift-image">
+            <p class="click-hint-text">Một món quà nhỏ tặng cậu!</p>
+        </div>
+    </div>
+
+    <div id="phase-celebration">
+        <canvas id="heart-canvas"></canvas>
+        <div class="card-container" id="card">
+            <div class="cake-wrapper">
+                <div class="cake-bottom"></div>
+                <div class="cake-top"></div>
+                <div class="candle"></div>
+                <div class="flame"></div>
+            </div>
+            <h1>Happy Birthday!</h1>
+            <div class="message" id="typewriter"></div>
+            <div class="footer" id="footerMsg">Mong mọi điều tốt đẹp nhất sẽ đến với cậu ✨</div>
+        </div>
+    </div>
+
+    <script>
+        const wishText = "Chúc mừng sinh nhật cậu nhé! Tuổi mới chúc cậu luôn xinh đẹp, vui vẻ và thành công. Mong rằng nụ cười sẽ luôn rạng rỡ trên môi cậu mỗi ngày! 🌸";
+        
+        // --- LOGIC PHASE 1 ---
+        function startSequence() {
+            document.querySelector('.start-hint').style.display = 'none';
+            const spark = document.getElementById('spark');
+            
+            spark.style.display = 'block'; 
+            
+            const upAnim = spark.animate([
+                { bottom: '0%' }, 
+                { bottom: '50%' }
+            ], { 
+                duration: 3000, 
+                easing: 'ease-in-out', 
+                fill: 'forwards' 
+            });
+
+            upAnim.onfinish = () => {
+                spark.style.display = 'none';
+                confettiExplosion(); 
+
+                const p1 = document.getElementById('phase-intro');
+                const p2 = document.getElementById('phase-box');
+                
+                p1.style.display = 'none';
+                p2.style.display = 'flex';
+                document.body.style.backgroundColor = '#ffe6e6'; 
+            };
+        }
+
+        function confettiExplosion() {
+            confetti({
+                particleCount: 150, spread: 120, origin: { y: 0.6 },
+                colors: ['#ff6b6b', '#feca57', '#54a0ff', '#5f27cd'], zIndex: 999
+            });
+        }
+
+        // --- PHASE 2 & 3 ---
+        function openGift() {
+            const p2 = document.getElementById('phase-box');
+            const p3 = document.getElementById('phase-celebration');
+            const card = document.getElementById('card');
+
+            p2.style.transition = 'opacity 0.5s';
+            p2.style.opacity = 0;
+
+            setTimeout(() => {
+                p2.style.display = 'none';
+                p3.style.display = 'flex';
+                document.body.style.background = 'linear-gradient(to right, #ff9a9e, #fecfef, #feada6)';
+                
+                setTimeout(() => {
+                    p3.style.opacity = 1;
+                    card.classList.add('active');
+                    
+                    typeWriter(wishText, document.getElementById('typewriter'), () => {
+                         document.getElementById('footerMsg').classList.add('show');
+                    });
+                    startFireworks();
+                    startHeartAnimation(); 
+                }, 100);
+            }, 500);
+        }
+
+        function typeWriter(text, element, callback) {
+            let i = 0;
+            element.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else if (callback) callback();
+            }
+            type();
+        }
+
+        function startFireworks() {
+            var duration = 15 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 95 };
+            setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return;
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random()*0.2 + 0.1, y: Math.random()-0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random()*0.2 + 0.7, y: Math.random()-0.2 } }));
+            }, 250);
+        }
+
+        function startHeartAnimation() {
+            const canvas = document.getElementById('heart-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height, hearts = [];
+            function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+            window.addEventListener('resize', resize); resize();
+            class Heart {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * width; this.y = height + Math.random() * 100;
+                    this.velY = Math.random() * -2 - 1; this.size = Math.random() * 10 + 5;
+                    this.color = `rgba(255, 105, 180, ${Math.random() * 0.5 + 0.3})`;
+                }
+                update() { this.y += this.velY; if (this.y < -50) this.reset(); }
+                draw() {
+                    ctx.fillStyle = this.color; ctx.beginPath();
+                    let h = this.size * 0.3;
+                    ctx.moveTo(this.x, this.y + h);
+                    ctx.bezierCurveTo(this.x, this.y, this.x - this.size/2, this.y, this.x - this.size/2, this.y + h);
+                    ctx.bezierCurveTo(this.x - this.size/2, this.y + (this.size+h)/2, this.x, this.y + this.size, this.x, this.y + this.size);
+                    ctx.bezierCurveTo(this.x, this.y + this.size, this.x + this.size/2, this.y + (this.size+h)/2, this.x + this.size/2, this.y + h);
+                    ctx.bezierCurveTo(this.x + this.size/2, this.y, this.x, this.y, this.x, this.y + h);
+                    ctx.fill();
+                }
+            }
+            for (let i = 0; i < 50; i++) hearts.push(new Heart());
+            function animate() { ctx.clearRect(0, 0, width, height); hearts.forEach(h => { h.update(); h.draw(); }); requestAnimationFrame(animate); }
+            animate();
+        }
+    </script>
+</body>
+</html>
