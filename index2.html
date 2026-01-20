@@ -24,34 +24,22 @@
 
         /* --- PHASE 1: INTRO --- */
         #intro-layer {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: flex-end;
             transition: opacity 1s ease-out;
         }
-
         .fuse-spark {
-            width: 10px; height: 10px;
-            background: #ff4500;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ff4500, 0 0 20px #ff8c00, 0 0 30px #ffd700;
-            position: absolute; bottom: 0;
-            animation: burnFuse 3s linear forwards; 
+            width: 10px; height: 10px; background: #ff4500;
+            border-radius: 50%; box-shadow: 0 0 10px #ff4500, 0 0 20px #ff8c00, 0 0 30px #ffd700;
+            position: absolute; bottom: 0; animation: burnFuse 3s linear forwards; 
         }
         .fuse-spark::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: inherit; border-radius: inherit; animation: sparkFlicker 0.1s infinite;
         }
-
         @keyframes burnFuse {
             0% { bottom: 0; transform: translateX(0); }
-            20% { transform: translateX(5px); }
-            40% { transform: translateX(-5px); }
-            60% { transform: translateX(5px); }
             100% { bottom: 50%; transform: translateX(0); }
         }
         @keyframes sparkFlicker { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
@@ -145,12 +133,9 @@
             introLayer.querySelector('div').style.display = 'none';
             spark.style.display = 'block';
             
-            // Log lỗi ra console nếu không phát được nhạc
-            matchSound.play().catch(e => {
-                console.error("LỖI AUDIO:", e);
-                console.log("Thử kiểm tra lại tên file hoặc file bị hỏng.");
-            });
-
+            // Log lỗi nếu file match.mp3 chưa đúng
+            matchSound.play().catch(e => console.error("Lỗi Audio Phase 1:", e));
+            
             spark.addEventListener('animationend', () => triggerExplosion());
         }
 
@@ -165,10 +150,17 @@
             }, 500);
         }
 
-        // --- PHASE 3 & 4 (KHÔNG ÂM THANH) ---
+        // --- PHASE 3 & 4 (KHẮC PHỤC LỖI CÒN TIẾNG) ---
         function openGift() {
+            // [KILL SWITCH] NGẮT NGAY LẬP TỨC MỌI ÂM THANH
+            matchSound.pause(); 
+            explosionSound.pause(); // Cưỡng chế dừng tiếng nổ
+            
+            // Chuyển cảnh
             giftContainer.style.display = 'none';
             mainCard.classList.add('open');
+            
+            // Hiệu ứng hình ảnh
             fireConfetti(); setTimeout(fireConfetti, 300);
             initParticles();
             typeWriter(config.message, document.getElementById('typingContent'));
