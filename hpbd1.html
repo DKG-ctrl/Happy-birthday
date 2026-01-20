@@ -19,7 +19,7 @@
             transition: background-color 0.2s ease-out;
         }
 
-        /* --- PHASE 1: TIA LỬA (Giữ nguyên) --- */
+        /* --- PHASE 1: TIA LỬA --- */
         #phase-intro {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; background: #000;
@@ -54,7 +54,7 @@
             filter: blur(2px); z-index: -1;
         }
 
-        /* --- PHASE 2: HỘP QUÀ (Đã thay ảnh & chỉnh lắc nhẹ) --- */
+        /* --- PHASE 2: HỘP QUÀ (LINK CDN SIÊU BỀN) --- */
         #phase-box {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: none; justify-content: center; align-items: center;
@@ -65,13 +65,13 @@
             display: flex; flex-direction: column; align-items: center;
             transition: transform 0.3s;
         }
-        .gift-wrapper:hover { transform: scale(1.05); } /* Hover phóng to nhẹ thôi */
+        .gift-wrapper:hover { transform: scale(1.05); } 
         
-        /* Ảnh Hộp Quà 3D (Link mới: Vàng, Nơ đỏ, Tròn trịa giống mẫu) */
+        /* Ảnh Hộp Quà 3D Microsoft Fluent (Link CDN jsDelivr - Bao sống 100%) */
         .gift-image {
             width: 180px; 
             filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
-            /* Animation: Kết hợp lắc nhẹ + nhấp nhô (gentle) */
+            /* Animation: Lắc lư nhẹ nhàng (Gentle) */
             animation: gentle-shake 3s ease-in-out infinite;
         }
 
@@ -114,12 +114,11 @@
         /* Animations */
         @keyframes fadeInOut { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
         
-        /* Hiệu ứng lắc lư NHẸ NHÀNG (Gentle Shake) */
+        /* Hiệu ứng lắc lư NHẸ NHÀNG (Gentle Shake & Float) */
         @keyframes gentle-shake {
-            0%, 100% { transform: rotate(0deg) translateY(0); }
-            25% { transform: rotate(3deg) translateY(-5px); } /* Nghiêng phải xíu + bay lên */
-            50% { transform: rotate(0deg) translateY(0); }
-            75% { transform: rotate(-3deg) translateY(-5px); } /* Nghiêng trái xíu + bay lên */
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(2deg); }
+            75% { transform: translateY(-5px) rotate(-2deg); }
         }
         
         @keyframes flicker { from { transform: scale(1); opacity: 1; } to { transform: scale(1.1); opacity: 0.8; } }
@@ -136,7 +135,7 @@
 
     <div id="phase-box">
         <div class="gift-wrapper" onclick="openGift()">
-            <img src="https://cdn-icons-png.flaticon.com/512/9496/9496085.png" alt="Gift Box" class="gift-image">
+            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Wrapped%20gift/3D/wrapped_gift_3d.png" alt="Gift Box" class="gift-image">
             <p class="click-hint-text">Một món quà nhỏ tặng cậu!</p>
         </div>
     </div>
