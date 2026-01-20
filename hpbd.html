@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary-pink: #ff9a9e;
+            --secondary-pink: #fecfef;
+            --bg-dark: #1a1a1a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-dark); /* Bắt đầu bằng màu tối */
+            transition: background-color 1.5s ease;
+        }
+
+        /* --- PHASE 1: DARKROOM & FUSE --- */
+        #phase-intro {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out;
+        }
+
+        .fuse-container {
+            position: relative;
+            width: 300px;
+            height: 4px;
+            background: #444;
+            border-radius: 2px;
+            margin-top: 20px;
+        }
+
+        .fuse-burn {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 0%; /* Sẽ tăng lên bằng JS */
+            background: transparent; 
+        }
+
+        .spark {
+            position: absolute;
+            top: -12px;
+            left: 0;
+            width: 30px; height: 30px;
+            background: radial-gradient(circle, #fff 10%, #ffeb3b 40%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 15px #ff9800, 0 0 30px #ff5722;
+            z-index: 101;
+            display: none; /* Ẩn cho đến khi click */
+        }
+        /* Hiệu ứng hạt lửa bắn ra */
+        .spark::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 4px; background: #fff;
+            box-shadow: -10px -10px 0 #ffeb3b, 10px 10px 0 #ff9800, 10px -10px 0 #ff5722;
+            animation: spark-spin 0.5s linear infinite;
+        }
+
+        @keyframes spark-spin { 100% { transform: rotate(360deg); } }
+
+        .start-btn {
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.3s;
+            animation: pulse-btn 2s infinite;
+        }
+        .start-btn:hover { background: #fff; color: #000; }
+        @keyframes pulse-btn { 0% { opacity: 0.5; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.5; transform: scale(0.95); } }
+
+        /* --- PHASE 2: MYSTERY BOX --- */
+        #phase-box {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none; /* JS sẽ bật */
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #2a2a2a 0%, #000 100%);
+            z-index: 90;
+        }
+
+        .gift-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .gift-wrapper:hover { transform: scale(1.1) rotate(-5deg); }
+
+        /* Vẽ hộp quà bằng CSS */
+        .box {
+            position: relative;
+            width: 120px; height: 100px;
+            background: linear-gradient(to bottom right, #ff7eb3, #ff758c);
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255, 117, 140, 0.4);
+            animation: box-shake 2.5s infinite;
+        }
+        .box-lid {
+            position: absolute;
+            top: -20px; left: -10px;
+            width: 140px; height: 30px;
+            background: #ff5e78;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+        .ribbon {
+            position: absolute;
+            top: 0; left: 50%; transform: translateX(-50%);
+            width: 20px; height: 100%;
+            background: #fff;
+            opacity: 0.8;
+        }
+        .bow {
+            position: absolute;
+            top: -45px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 40px;
+        }
+        .bow::before, .bow::after {
+            content: ''; position: absolute; bottom: 0;
+            width: 30px; height: 30px;
+            border: 4px solid #fff;
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(45deg);
+        }
+        .bow::after { left: 30px; transform: rotate(-45deg) scaleX(-1); border-radius: 50% 50% 50% 0; }
+        
+        @keyframes box-shake {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            55% { transform: translateY(-10px) rotate(5deg); }
+            60% { transform: translateY(-10px) rotate(-5deg); }
+            65% { transform: translateY(-10px) rotate(0); }
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: -50px; left: 50%; transform: translateX(-50%);
+            color: #ff9a9e;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            opacity: 0.8;
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* --- PHASE 3: CELEBRATION (PINK WORLD) --- */
+        #phase-celebration {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 80;
+            /* Background màu hồng phấn pastel */
+            background-image: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%);
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .glass-card.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Cute Cake CSS */
+        .cake-stage {
+            height: 140px; width: 140px;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+        .cake-layer {
+            position: absolute; bottom: 0; left: 10px;
+            width: 120px; height: 50px;
+            background: #ffc4d6;
+            border-radius: 10px 10px 0 0;
+        }
+        .cake-layer::before { /* Lớp kem chảy */
+            content: ''; position: absolute; top: -10px; left: 0;
+            width: 100%; height: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .cake-top-layer {
+            position: absolute; bottom: 50px; left: 20px;
+            width: 100px; height: 40px;
+            background: #ffb7b2;
+            border-radius: 10px 10px 0 0;
+        }
+        .cake-top-layer::before { /* Lớp kem chảy tầng trên */
+            content: ''; position: absolute; top: -8px; left: 0;
+            width: 100%; height: 18px;
+            background: #fff;
+            border-radius: 10px;
+        }
+        .cherry {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 15px; height: 15px;
+            background: #d81b60;
+            border-radius: 50%;
+        }
+        .candle {
+            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            width: 6px; height: 25px;
+            background: linear-gradient(to bottom, #fff0f5, #f48fb1);
+            border-radius: 3px;
+        }
+        .flame {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            width: 10px; height: 14px;
+            background: #ff9800;
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.4s infinite alternate;
+            box-shadow: 0 0 10px #ffeb3b;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #d81b60;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .message {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            min-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: #d81b60;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes flicker { from { opacity: 1; transform: translateX(-50%) scale(1); } to { opacity: 0.8; transform: translateX(-50%) scale(0.9); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="phase-intro">
+        <div class="start-btn" onclick="startFuse()">Chạm vào đây để bắt đầu ✨</div>
+        <div class="fuse-container">
+            <div class="fuse-burn" id="fuseLine"></div>
+            <div class="spark" id="spark"></div>
+        </div>
+    </div>
+
+    <div id="phase-box">
+        <div class="gift-wrapper" onclick="openGift()">
+            <div class="box">
+                <div class="ribbon"></div>
+                <div class="box-lid">
+                    <div class="ribbon"></div>
+                    <div class="bow"></div>
+                </div>
+            </div>
+            <div class="click-hint">Mở quà đi nè! 💖</div>
+        </div>
+    </div>
+
+    <div id="phase-celebration">
+        <div class="glass-card" id="mainCard">
+            <div class="cake-stage">
+                <div class="cake-layer"></div>
+                <div class="cake-top-layer">
+                    <div class="cherry"></div>
+                    <div class="candle">
+                        <div class="flame"></div>
+                    </div>
+                </div>
+            </div>
+            <h1>Happy Birthday!</h1>
+            <div class="message">
+                <span id="typewriter"></span><span class="cursor">|</span>
+            </div>
+            <div style="font-size: 0.9rem; color: #888; font-style: italic; margin-top: 20px;">
+                Mong mọi điều tốt đẹp nhất sẽ đến với cậu ✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CẤU HÌNH LỜI CHÚC ---
+        // Bro sửa lời chúc ở đây nhé
+        const wishText = "Chúc mừng sinh nhật cậu nhé! Tuổi mới chúc cậu luôn xinh đẹp, vui vẻ và thành công. Mong rằng nụ cười sẽ luôn rạng rỡ trên môi cậu mỗi ngày! 🌸";
+        const typingSpeed = 50; // Tốc độ gõ chữ (càng nhỏ càng nhanh)
+
+        // --- LOGIC ---
+        
+        function startFuse() {
+            // Ẩn nút start
+            document.querySelector('.start-btn').style.display = 'none';
+            const spark = document.getElementById('spark');
+            const fuseLine = document.getElementById('fuseLine');
+            
+            spark.style.display = 'block';
+
+            // Animation đốt dây (dùng JS để đồng bộ chính xác hơn CSS thuần)
+            let width = 0;
+            const duration = 2500; // 2.5 giây đốt dây
+            const intervalTime = 20;
+            const step = 100 / (duration / intervalTime);
+
+            const burning = setInterval(() => {
+                width += step;
+                // Di chuyển tia lửa từ trái sang phải
+                spark.style.left = width + '%';
+                
+                if (width >= 100) {
+                    clearInterval(burning);
+                    triggerExplosion();
+                }
+            }, intervalTime);
+        }
+
+        function triggerExplosion() {
+            // Hiệu ứng nổ pháo hoa lúc chuyển cảnh
+            fireworksEffect();
+            
+            // Ẩn phase 1, hiện phase 2
+            const p1 = document.getElementById('phase-intro');
+            const p2 = document.getElementById('phase-box');
+            
+            p1.style.opacity = 0;
+            setTimeout(() => {
+                p1.style.display = 'none';
+                p2.style.display = 'flex';
+                // Đổi background body sang tối mờ để chuẩn bị cho hộp quà
+                document.body.style.backgroundColor = '#111';
+            }, 800);
+        }
+
+        function openGift() {
+            const p2 = document.getElementById('phase-box');
+            const p3 = document.getElementById('phase-celebration');
+            const card = document.getElementById('mainCard');
+
+            // Bắn tim tung tóe (Phase 4 effect)
+            heartExplosion();
+
+            p2.style.transition = "opacity 0.5s";
+            p2.style.opacity = 0;
+
+            setTimeout(() => {
+                p2.style.display = 'none';
+                p3.style.display = 'flex';
+                
+                // Fade in background hồng
+                setTimeout(() => {
+                    p3.style.opacity = 1;
+                    card.classList.add('active'); // Hiện card lên
+                    
+                    // Bắt đầu gõ chữ sau khi card hiện xong
+                    setTimeout(() => {
+                        typeWriter(wishText, document.getElementById('typewriter'));
+                    }, 1000);
+                }, 100);
+
+            }, 500);
+        }
+
+        // Hàm gõ chữ
+        function typeWriter(text, element) {
+            let i = 0;
+            element.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, typingSpeed);
+                } else {
+                    document.querySelector('.cursor').style.display = 'none'; // Tắt con trỏ khi gõ xong
+                }
+            }
+            type();
+        }
+
+        // Hiệu ứng pháo hoa cơ bản
+        function fireworksEffect() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ffeb3b', '#ff9800', '#ffffff'],
+                zIndex: 9999
+            });
+        }
+
+        // Hiệu ứng bắn tim (Heart Explosion)
+        function heartExplosion() {
+            const defaults = {
+                spread: 360,
+                ticks: 100,
+                gravity: 0,
+                decay: 0.94,
+                startVelocity: 30,
+                shapes: ['heart'],
+                colors: ['#FFC0CB', '#FF69B4', '#FF1493', '#C71585']
+            };
+
+            confetti({
+                ...defaults,
+                particleCount: 50,
+                scalar: 2
+            });
+
+            confetti({
+                ...defaults,
+                particleCount: 25,
+                scalar: 3,
+                shapes: ['circle']
+            });
+            
+            confetti({
+                ...defaults,
+                particleCount: 10,
+                scalar: 4,
+                shapes: ['circle'],
+                colors: ['#fecfef']
+            });
+        }
+
+    </script>
+</body>
+</html>
