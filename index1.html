@@ -43,7 +43,7 @@
             position: absolute;
             bottom: 0;
             /* Animation chạy từ dưới lên giữa màn hình trong 4s */
-            animation: burnFuse 4s linear forwards; 
+            animation: burnFuse 3s linear forwards; 
         }
 
         /* Hiệu ứng tàn lửa rơi ra từ ngòi nổ */
@@ -131,7 +131,7 @@
         }
 
         /* CSS BÁNH KEM ĐÃ CĂN GIỮA */
-        .cake-container { position: relative; width: 150px; height: 150px; margin: 0 auto 20px; display: flex; justify-content: center; }
+        .cake-container { position: relative; width: 150px; height: 160px; margin: 0 auto 20px; display: flex; justify-content: center; }
         .cake-body { width: 100%; height: 80%; background: #f4a460; border-radius: 10px; position: absolute; bottom: 0; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1); left: 0; }
         .cake-icing { width: 110%; height: 30%; background: #fff0f5; border-radius: 50%; position: absolute; top: 15%; left: -5%; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
         .candle { width: 10px; height: 40px; background: #ffcccb; position: absolute; bottom: 85%; left: 50%; transform: translateX(-50%); border-radius: 5px; }
@@ -180,7 +180,6 @@
         </div>
         <h1>Happy Birthday! 🎂</h1>
         <p id="typingContent"></p>
-        <div class="signature">From [Tên Bro] with ❤️</div>
     </div>
 
     <script>
@@ -196,9 +195,7 @@
         const giftContainer = document.getElementById('giftContainer');
         const mainCard = document.getElementById('mainCard');
         
-        // --- SOUNDS (Đã bỏ nhạc nền) ---
-        const fuseSound = document.getElementById('fuseSound');
-        const explosionSound = document.getElementById('explosionSound');
+        
 
         // --- STEP 1: BẮT ĐẦU CHẠY NGÒI NỔ (Khi click vào màn hình đen) ---
         function startFuse() {
@@ -313,4 +310,5 @@
         function animate() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
     </script>
 </body>
+
 </html>
