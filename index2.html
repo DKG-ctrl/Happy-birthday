@@ -195,12 +195,8 @@
     <canvas id="canvas"></canvas>
 
     <audio id="matchSound">
-        <source src="./match.mp3" type="audio/mpeg">
+        <source src="match.mp3" type="audio/mpeg">
     </audio>
-    <audio id="explosionSound">
-        <source src="https://www.soundjay.com/mechanical/sounds/explosion-01.mp3" type="audio/mpeg">
-    </audio>
-
     <div id="intro-layer" onclick="startIntro()">
         <div style="color: white; margin-bottom: 50px; font-family: 'Quicksand'; animation: blink 1s infinite;">
             Click vào màn hình để bắt đầu... 👇
@@ -221,9 +217,6 @@
         </div>
         <h1>Happy Birthday! 🎂</h1>
         <p id="typingContent"></p>
-        <div class="signature">From [Tên Bro] with ❤️</div>
-    </div>
-
     <script>
         // --- CONFIG ---
         const config = {
@@ -352,4 +345,5 @@
         function animate() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
     </script>
 </body>
+
 </html>
